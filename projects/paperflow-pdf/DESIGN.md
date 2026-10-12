@@ -44,7 +44,7 @@
   - ❌ **DO NOT enclose items inside bordered rectangular cards.**
   - ✅ **Use Borderless List Items**: Items sit directly on the canvas, separated by 16px vertical padding and a subtle `0.5px` hairline divider (`var(--border-subtle)`).
 - **Interactive Buttons**:
-  - Style: `9999px` (PILL style)
+  - Style: `9999px`
   - Height: `46px` (Touch ergonomic standard)
   - Layout Rule: **Never stretch heavy black buttons 100% width across the bottom.** Use Floating Pill Actions (width: auto or inset with margins).
 - **Navigation**:
@@ -64,8 +64,8 @@
 
 ## 6. Target User Journey & Screens
 The AI canvas must maintain 100% token consistency across all following screens:
-  1. **Màn hình chính**
-  2. **Màn hình chi tiết**
-  3. **Màn hình cài đặt**
+  1. **Thư viện tài liệu**
+  2. **Màn hình đọc sách & ghi chú**
+  3. **Cài đặt chế độ đọc**
 - Rule: Bottom navigation, card radius, button height, and color tokens must NEVER drift between these screens.
 

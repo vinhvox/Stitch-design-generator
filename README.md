@@ -35,8 +35,10 @@ Dự án này cung cấp công cụ tự động tạo file **`DESIGN.md`** (Des
    * ❌ CẤM các nút bấm đen sì chiếm 100% chiều ngang màn hình.
    * ✅ BẮT BUỘC dùng **Borderless List Items** (không viền, khoảng trắng tự nhiên, hairline divider 0.5px) và **Floating Action Pills**.
 3. **Chế độ phỏng vấn chuyên sâu 7 bước (Deep Art Direction Wizard):** Khai thác chi tiết từ cá tính hình ảnh, nhiệt độ màu, triết lý bố cục, typography đến từng màn hình mục tiêu.
-4. **Tự động lưu vào folder dự án riêng biệt (`projects/<tên-dự-án>/`):** Không bao giờ ghi đè lên các dự án cũ, tự động sinh cả `DESIGN.md` và `STITCH_PROMPTS.md` đa màn hình.
-5. **Không phụ thuộc thư viện ngoài:** Chạy mượt mà với 100% thư viện chuẩn của Python 3 (Standard Library).
+4. **Tự động lưu vào folder dự án riêng biệt (`projects/<tên-dự-án>/`):** Không bao giờ ghi đè lên các dự án cũ.
+5. **Dashboard xem trước trực quan (`preview.html`):** Double-click mở file HTML trong trình duyệt để thử màu sắc, xem component thực tế và sao chép prompt từng màn hình bằng 1 cú click chuột!
+6. **Cầu nối Design-to-Code:** Tự động xuất kèm mã nguồn `tokens.css` (cho Web / Tailwind) và `ThemeTokens.kt` (cho Android Jetpack Compose).
+7. **Không phụ thuộc thư viện ngoài:** Chạy mượt mà với 100% thư viện chuẩn của Python 3 (Standard Library).
 
 ---
 
@@ -49,14 +51,13 @@ cd Stitch-design-generator
 
 # Cách 1: Chế độ tương tác hỏi-đáp 7 bước (Khuyên dùng)
 python3 generator.py --interactive
-# 👉 Tự động tạo thư mục: projects/<tên-app>/DESIGN.md và STITCH_PROMPTS.md
+# 👉 Tự động tạo trọn bộ sản phẩm trong: projects/<tên-app>/
 
-# Cách 2: Tạo nhanh bằng lệnh 1 dòng
+# Cách 2: Xem danh sách các dự án đã tạo
+python3 generator.py --list
+
+# Cách 3: Tạo nhanh bằng lệnh 1 dòng
 python3 generator.py "fintech crypto wallet" -p "ApexWallet"
-# 👉 Lưu vào: projects/apexwallet/DESIGN.md & STITCH_PROMPTS.md
-
-# Cách 3: Chỉ định thư mục lưu trữ tùy ý
-python3 generator.py "fitness gym tracker" -p "PulseFit" -o my_custom_folder/
 ```
 
 ---
@@ -107,9 +108,12 @@ stitch-design-generator/
 │   ├── DESIGN.md.template        # Base DESIGN.md markdown template
 │   └── stitch-prompt.md.template # Prompt wrapper for Stitch
 ├── projects/                     # Generated projects (Dedicated folder per project)
-│   └── paperflow-pdf/            # Example project folder
-│       ├── DESIGN.md             # Project Design DNA
-│       └── STITCH_PROMPTS.md     # Multi-screen prompt suite
+│   └── calculator/               # Example project bundle
+│       ├── DESIGN.md             # Project Design DNA (Tokens & Rules)
+│       ├── STITCH_PROMPTS.md     # Multi-screen prompt suite (Concise + Full)
+│       ├── preview.html          # Interactive Web Dashboard & 1-Click Prompt Copy
+│       ├── tokens.css            # CSS Variables for Web / Tailwind
+│       └── CalculatorTokens.kt   # Jetpack Compose Color & Shape Tokens
 ├── examples/
 │   ├── fintech-crypto-wallet/    # ApexWallet example & prompt
 │   ├── health-fitness-tracker/   # PulseFit example & prompt

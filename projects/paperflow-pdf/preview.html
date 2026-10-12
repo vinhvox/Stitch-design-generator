@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaperFlow PDF — Stitch Design Preview</title>
+    <style>
+        :root {
+            --bg-canvas: #FAF8F5;
+            --bg-surface: #FFFFFF;
+            --border-subtle: #EFECE6;
+            --text-primary: #1C1917;
+            --text-secondary: #78716C;
+            --brand-primary: #B45309;
+            --brand-hover: #92400E;
+            --radius-card: 16px;
+            --radius-pill: 9999px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-canvas);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 32px 20px;
+            line-height: 1.6;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        header { margin-bottom: 40px; text-align: center; }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; }
+        .subtitle { color: var(--text-secondary); font-size: 16px; max-width: 600px; margin: 0 auto; }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 36px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Swatches Grid */
+        .swatches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .swatch {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .swatch:hover { transform: translateY(-2px); }
+        .color-box {
+            height: 48px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.06);
+            margin-bottom: 8px;
+        }
+        .swatch-name { font-size: 12px; font-weight: 600; }
+        .swatch-hex { font-size: 11px; color: var(--text-secondary); font-family: monospace; }
+
+        /* Component Demo */
+        .demo-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
+            padding: 24px;
+            margin-bottom: 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+        .btn-pill {
+            background: var(--brand-primary);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-pill);
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-pill);
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Screen Prompts */
+        .screen-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .screen-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .screen-badge {
+            background: var(--brand-primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .screen-title { font-size: 18px; font-weight: 600; }
+        .screen-hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+        .code-box {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text-primary);
+            overflow-x: auto;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+        }
+        .btn-copy {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-copy:hover { opacity: 0.9; }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #111827;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge">🎨 Stitch Design Pro Preview</div>
+            <h1>PaperFlow PDF</h1>
+            <p class="subtitle">Editorial Warmth (Paper & Craft) — Ấm áp, Thủ công, Tạp chí nghệ thuật như Apple Books, Craft Docs, Kinfolk</p>
+        </header>
+
+        <h2 class="section-title">🎨 Bảng màu Design Tokens</h2>
+        <div class="swatches-grid">
+            <div class="swatch" onclick="copyText('#FAF8F5', 'Canvas')">
+                <div class="color-box" style="background:#FAF8F5;"></div>
+                <div class="swatch-name">Canvas</div>
+                <div class="swatch-hex">#FAF8F5</div>
+            </div>
+            <div class="swatch" onclick="copyText('#FFFFFF', 'Surface')">
+                <div class="color-box" style="background:#FFFFFF;"></div>
+                <div class="swatch-name">Surface</div>
+                <div class="swatch-hex">#FFFFFF</div>
+            </div>
+            <div class="swatch" onclick="copyText('#B45309', 'Brand Accent')">
+                <div class="color-box" style="background:#B45309;"></div>
+                <div class="swatch-name">Accent CTA</div>
+                <div class="swatch-hex">#B45309</div>
+            </div>
+            <div class="swatch" onclick="copyText('#1C1917', 'Text Primary')">
+                <div class="color-box" style="background:#1C1917;"></div>
+                <div class="swatch-name">Text Primary</div>
+                <div class="swatch-hex">#1C1917</div>
+            </div>
+            <div class="swatch" onclick="copyText('#EFECE6', 'Border')">
+                <div class="color-box" style="background:#EFECE6;"></div>
+                <div class="swatch-name">Hairline Border</div>
+                <div class="swatch-hex">#EFECE6</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">🔘 Trải nghiệm Thành phần & Nút bấm</h2>
+        <div class="demo-card">
+            <button class="btn-pill">Floating Pill Button</button>
+            <button class="btn-outline">Outline Action</button>
+            <span style="color:var(--text-secondary); font-size:14px;">← Phong cách mềm mại, thanh thoát, không còn vệt thô cứng AI</span>
+        </div>
+
+        <h2 class="section-title">📋 Bộ Prompt từng màn hình (Dán vào Stitch)</h2>
+        
+        <div class="screen-card">
+            <div class="screen-header">
+                <span class="screen-badge">Màn hình #1</span>
+                <h3 class="screen-title">Thư viện tài liệu</h3>
+            </div>
+            <p class="screen-hint">💡 <strong>UX Guidance:</strong> Danh sách dạng borderless item list, thẻ tệp phẳng đặt trực tiếp trên nền canvas với thumbnail sắc nét và hairline divider 0.5px.</p>
+            <div class="code-box">
+                <pre><code>You are a Principal Product Designer building "PaperFlow PDF".
+Create Screen #1: "Thư viện tài liệu".
+
+STRICT DESIGN SYSTEM INSTRUCTIONS:
+- Strictly follow all tokens and rules in the project's DESIGN.md.
+- Focus: Danh sách dạng borderless item list, thẻ tệp phẳng đặt trực tiếp trên nền canvas với thumbnail sắc nét và hairline divider 0.5px.
+- Anti-Boxy Directive: DO NOT use boxed rectangle cards with 1px borders. Use generous whitespace, borderless typography flow, and hairline dividers.
+- Ergonomics: Use floating pill capsule buttons for primary interactions.</code></pre>
+            </div>
+            <button class="btn-copy" onclick="copyPrompt(`You are a Principal Product Designer building &quot;PaperFlow PDF&quot;.&#10;Create Screen #1: &quot;Thư viện tài liệu&quot;.&#10;&#10;STRICT DESIGN SYSTEM INSTRUCTIONS:&#10;- Strictly follow all tokens and rules in the project's DESIGN.md.&#10;- Focus: Danh sách dạng borderless item list, thẻ tệp phẳng đặt trực tiếp trên nền canvas với thumbnail sắc nét và hairline divider 0.5px.&#10;- Anti-Boxy Directive: DO NOT use boxed rectangle cards with 1px borders. Use generous whitespace, borderless typography flow, and hairline dividers.&#10;- Ergonomics: Use floating pill capsule buttons for primary interactions.`, this)">📋 Sao chép Prompt cho Stitch</button>
+        </div>
+        
+        <div class="screen-card">
+            <div class="screen-header">
+                <span class="screen-badge">Màn hình #2</span>
+                <h3 class="screen-title">Màn hình đọc sách & ghi chú</h3>
+            </div>
+            <p class="screen-hint">💡 <strong>UX Guidance:</strong> Thanh công cụ ghi chú nổi (Floating Pill) gồm highlight, underline, bookmark; thanh trượt số trang đặt dưới đáy đúng tầm với ngón cái.</p>
+            <div class="code-box">
+                <pre><code>You are a Principal Product Designer building "PaperFlow PDF".
+Create Screen #2: "Màn hình đọc sách & ghi chú".
+
+STRICT DESIGN SYSTEM INSTRUCTIONS:
+- Strictly follow all tokens and rules in the project's DESIGN.md.
+- Focus: Thanh công cụ ghi chú nổi (Floating Pill) gồm highlight, underline, bookmark; thanh trượt số trang đặt dưới đáy đúng tầm với ngón cái.
+- Anti-Boxy Directive: DO NOT use boxed rectangle cards with 1px borders. Use generous whitespace, borderless typography flow, and hairline dividers.
+- Ergonomics: Use floating pill capsule buttons for primary interactions.</code></pre>
+            </div>
+            <button class="btn-copy" onclick="copyPrompt(`You are a Principal Product Designer building &quot;PaperFlow PDF&quot;.&#10;Create Screen #2: &quot;Màn hình đọc sách & ghi chú&quot;.&#10;&#10;STRICT DESIGN SYSTEM INSTRUCTIONS:&#10;- Strictly follow all tokens and rules in the project's DESIGN.md.&#10;- Focus: Thanh công cụ ghi chú nổi (Floating Pill) gồm highlight, underline, bookmark; thanh trượt số trang đặt dưới đáy đúng tầm với ngón cái.&#10;- Anti-Boxy Directive: DO NOT use boxed rectangle cards with 1px borders. Use generous whitespace, borderless typography flow, and hairline dividers.&#10;- Ergonomics: Use floating pill capsule buttons for primary interactions.`, this)">📋 Sao chép Prompt cho Stitch</button>
+        </div>
+        
+        <div class="screen-card">
+            <div class="screen-header">
+                <span class="screen-badge">Màn hình #3</span>
+                <h3 class="screen-title">Cài đặt chế độ đọc</h3>
+            </div>
+            <p class="screen-hint">💡 <strong>UX Guidance:</strong> Thanh công cụ ghi chú nổi (Floating Pill) gồm highlight, underline, bookmark; thanh trượt số trang đặt dưới đáy đúng tầm với ngón cái.</p>
+            <div class="code-box">
+                <pre><code>You are a Principal Product Designer building "PaperFlow PDF".
+Create Screen #3: "Cài đặt chế độ đọc".
+
+STRICT DESIGN SYSTEM INSTRUCTIONS:
+- Strictly follow all tokens and rules in the project's DESIGN.md.
+- Focus: Thanh công cụ ghi chú nổi (Floating Pill) gồm highlight, underline, bookmark; thanh trượt số trang đặt dưới đáy đúng tầm với ngón cái.
+- Anti-Boxy Directive: DO NOT use boxed rectangle cards with 1px borders. Use generous whitespace, borderless typography flow, and hairline dividers.
+- Ergonomics: Use floating pill capsule buttons for primary interactions.</code></pre>
+            </div>
+            <button class="btn-copy" onclick="copyPrompt(`You are a Principal Product Designer building &quot;PaperFlow PDF&quot;.&#10;Create Screen #3: &quot;Cài đặt chế độ đọc&quot;.&#10;&#10;STRICT DESIGN SYSTEM INSTRUCTIONS:&#10;- Strictly follow all tokens and rules in the project's DESIGN.md.&#10;- Focus: Thanh công cụ ghi chú nổi (Floating Pill) gồm highlight, underline, bookmark; thanh trượt số trang đặt dưới đáy đúng tầm với ngón cái.&#10;- Anti-Boxy Directive: DO NOT use boxed rectangle cards with 1px borders. Use generous whitespace, borderless typography flow, and hairline dividers.&#10;- Ergonomics: Use floating pill capsule buttons for primary interactions.`, this)">📋 Sao chép Prompt cho Stitch</button>
+        </div>
+        
+    </div>
+
+    <div id="toast" class="toast">Đã sao chép!</div>
+
+    <script>
+        function copyText(text, label) {
+            navigator.clipboard.writeText(text);
+            showToast("Đã chép mã màu " + label + ": " + text);
+        }
+        function copyPrompt(text, btn) {
+            navigator.clipboard.writeText(text);
+            const oldText = btn.innerText;
+            btn.innerText = "✅ Đã sao chép thành công!";
+            setTimeout(() => { btn.innerText = oldText; }, 2000);
+            showToast("Đã chép prompt vào Clipboard!");
+        }
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            t.innerText = msg;
+            t.style.display = "block";
+            setTimeout(() => { t.style.display = "none"; }, 2500);
+        }
+    </script>
+</body>
+</html>
