@@ -20,10 +20,19 @@ Zero third-party dependencies required (Standard Python 3 only).
 
 import os
 import sys
+import re
 import json
 import argparse
 import subprocess
+import unicodedata
 from typing import Dict, Any, Optional, List
+
+def slugify(text: str) -> str:
+    """Converts a project name into a clean, safe directory slug."""
+    # Normalize unicode characters (removes accents/diacritics)
+    norm = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
+    slug = re.sub(r'[^a-zA-Z0-9_\-]+', '-', norm).strip('-').lower()
+    return slug or "my-project"
 
 # ANSI formatting helpers for terminal polish
 BOLD = "\033[1m"
@@ -475,10 +484,15 @@ def interactive_mode():
     choice_btn = input(f"  ▸ {BOLD}Chọn phong cách nút [1-3]{RESET} (Mặc định [1]): ").strip()
     btn_mode = "pill" if choice_btn != "2" and choice_btn != "3" else ("soft" if choice_btn == "2" else "minimal")
 
-    # 7. Target Screens & Output File
+    # 7. Target Screens & Output Directory
+    project_slug = slugify(project_name)
+    default_project_dir = os.path.join("projects", project_slug)
+
     print(f"\n{BOLD}{YELLOW}[Bước 7/7] 🎯 DANH SÁCH MÀN HÌNH MỤC TIÊU & XUẤT BẢN{RESET}")
     platform = input(f"  ▸ {BOLD}Nền tảng mục tiêu (mobile / web){RESET} [mobile]: ").strip() or "mobile"
-    output_file = input(f"  ▸ {BOLD}Tên file Design System{RESET} [DESIGN.md]: ").strip() or "DESIGN.md"
+    
+    dir_input = input(f"  ▸ {BOLD}Thư mục lưu dự án (tránh ghi đè){RESET} [{default_project_dir}]: ").strip()
+    project_dir = dir_input or default_project_dir
     
     print("\n  💡 Nhập các màn hình bạn muốn sinh trên Stitch (cách nhau bởi dấu phẩy):")
     print("     Ví dụ: Thư viện tài liệu, Màn hình đọc sách & ghi chú, Cài đặt chế độ đọc")
@@ -495,6 +509,7 @@ def interactive_mode():
     print(f" {BOLD}TỔNG KẾT BẢN THIẾT KẾ NGHỆ THUẬT (DESIGN DNA SUMMARY){RESET}")
     print(f"{BOLD}{GREEN}═══════════════════════════════════════════════════════════════════════════════════════{RESET}")
     print(f"  • Dự án:            {BOLD}{project_name}{RESET} ({platform.upper()})")
+    print(f"  • Thư mục riêng:    {CYAN}{project_dir}/{RESET}")
     print(f"  • Linh hồn thẩm mỹ: {CYAN}{selected_persona['name']}{RESET}")
     print(f"  • Bố cục:           {GREEN}{layout_mode.upper()} (Chống đóng hộp){RESET}")
     print(f"  • Bảng màu:         Canvas: {selected_persona['bg_canvas']} | Accent: {color_override.get('brand_primary', selected_persona['brand_primary'])}")
@@ -508,7 +523,11 @@ def interactive_mode():
         print("❌ Đã hủy thao tác.")
         return
 
-    print(f"\n⚙️  {CYAN}Đang tổng hợp Design System chuẩn và bộ Prompt chuyên dụng...{RESET}")
+    os.makedirs(project_dir, exist_ok=True)
+    design_md_file = os.path.join(project_dir, "DESIGN.md")
+    prompt_suite_file = os.path.join(project_dir, "STITCH_PROMPTS.md")
+
+    print(f"\n⚙️  {CYAN}Đang lưu trữ độc lập vào thư mục '{project_dir}/'...{RESET}")
     content = generate_design_md(
         project_name=project_name,
         query=query,
@@ -521,22 +540,19 @@ def interactive_mode():
         target_screens=target_screens
     )
 
-    with open(output_file, "w", encoding="utf-8") as f:
+    with open(design_md_file, "w", encoding="utf-8") as f:
         f.write(content)
-    print(f"  ✅ {GREEN}Đã tạo Design System:{RESET} '{output_file}'")
+    print(f"  ✅ {GREEN}Đã lưu Design System:{RESET} '{design_md_file}'")
 
-    # Generate prompt suite for all screens
-    output_dir = os.path.dirname(output_file) or "."
-    prompt_suite_file = os.path.join(output_dir, "STITCH_PROMPTS.md")
     prompt_suite_content = generate_stitch_prompt_suite(project_name, target_screens, content)
     with open(prompt_suite_file, "w", encoding="utf-8") as f:
         f.write(prompt_suite_content)
-    print(f"  ✅ {GREEN}Đã tạo Bộ Prompt đa màn hình:{RESET} '{prompt_suite_file}'")
+    print(f"  ✅ {GREEN}Đã lưu Bộ Prompt đa màn hình:{RESET} '{prompt_suite_file}'")
 
     print(f"\n{BOLD}{CYAN}═══════════════════════════════════════════════════════════════════════════════════════{RESET}")
     print(f" {BOLD}HƯỚNG DẪN 3 BƯỚC ĐỂ SINH UI ĐẸP XUẤT SẮC TRÊN STITCH:{RESET}")
     print(f"  1. Mở {BOLD}stitch.withgoogle.com{RESET} và tạo project mới.")
-    print(f"  2. Copy toàn bộ nội dung file {BOLD}{output_file}{RESET} dán vào Stitch canvas để khóa chặt Design DNA.")
+    print(f"  2. Copy toàn bộ nội dung file {BOLD}{design_md_file}{RESET} dán vào Stitch canvas để khóa chặt Design DNA.")
     print(f"  3. Mở file {BOLD}{prompt_suite_file}{RESET}, copy lần lượt từng prompt cho từng màn hình.")
     print(f"     ➡️ Stitch sẽ sinh ra giao diện mềm mại, thanh thoát, hoàn toàn hết mùi AI!")
     print(f"{BOLD}{CYAN}═══════════════════════════════════════════════════════════════════════════════════════{RESET}\n")
@@ -550,7 +566,7 @@ def main():
     parser.add_argument("-p", "--project", default="App Project", help="Project name")
     parser.add_argument("--platform", default="mobile", choices=["mobile", "web"], help="Target platform")
     parser.add_argument("--taste", default="editorial_warmth", choices=list(TASTE_PERSONAS.keys()), help="Aesthetic taste engine")
-    parser.add_argument("-o", "--output", default="DESIGN.md", help="Output file path")
+    parser.add_argument("-o", "--output-dir", default="", help="Custom output directory (default: projects/<project-slug>)")
     parser.add_argument("--prompt-for", help="Also generate an enhanced Stitch prompt for a specific screen")
     parser.add_argument("--interactive", action="store_true", help="Run interactive consultation wizard")
 
@@ -560,26 +576,31 @@ def main():
         interactive_mode()
         return
 
+    project_slug = slugify(args.project)
+    project_dir = args.output_dir or os.path.join("projects", project_slug)
+    os.makedirs(project_dir, exist_ok=True)
+
+    design_md_file = os.path.join(project_dir, "DESIGN.md")
+    prompt_suite_file = os.path.join(project_dir, "STITCH_PROMPTS.md")
+
+    target_screens = [args.prompt_for] if args.prompt_for else ["Màn hình chính", "Màn hình chi tiết", "Màn hình cài đặt"]
+
     content = generate_design_md(
         project_name=args.project,
         query=args.query,
         taste_key=args.taste,
-        platform=args.platform
+        platform=args.platform,
+        target_screens=target_screens
     )
 
-    with open(args.output, "w", encoding="utf-8") as f:
+    with open(design_md_file, "w", encoding="utf-8") as f:
         f.write(content)
+    print(f"✨ Successfully generated '{design_md_file}' for '{args.project}' ({args.platform})")
 
-    print(f"✨ Successfully generated '{args.output}' for '{args.project}' ({args.platform})")
-
-    if args.prompt_for:
-        prompt_content = generate_stitch_prompt_suite(args.project, [args.prompt_for], content)
-        output_dir = os.path.dirname(args.output) or "."
-        base_name = os.path.basename(args.output)
-        prompt_output = os.path.join(output_dir, f"PROMPT_{base_name}")
-        with open(prompt_output, "w", encoding="utf-8") as f:
-            f.write(prompt_content)
-        print(f"📋 Generated Stitch Copy-Paste Prompt: '{prompt_output}'")
+    prompt_content = generate_stitch_prompt_suite(args.project, target_screens, content)
+    with open(prompt_suite_file, "w", encoding="utf-8") as f:
+        f.write(prompt_content)
+    print(f"📋 Generated Multi-Screen Prompt Suite: '{prompt_suite_file}'")
 
 
 if __name__ == "__main__":

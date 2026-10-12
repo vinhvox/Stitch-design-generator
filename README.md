@@ -34,8 +34,9 @@ Dự án này cung cấp công cụ tự động tạo file **`DESIGN.md`** (Des
    * ❌ CẤM nhồi nhét mọi thứ vào các ô chữ nhật viền xám xếp chồng kiểu bảng tính Excel.
    * ❌ CẤM các nút bấm đen sì chiếm 100% chiều ngang màn hình.
    * ✅ BẮT BUỘC dùng **Borderless List Items** (không viền, khoảng trắng tự nhiên, hairline divider 0.5px) và **Floating Action Pills**.
-3. **Chế độ phỏng vấn chuyên sâu 6 bước (Deep Interactive Wizard):** Khai thác chi tiết từ cá tính hình ảnh, nhiệt độ màu, triết lý bố cục đến kiểu dáng nút bấm.
-4. **Không phụ thuộc thư viện ngoài:** Chạy mượt mà với 100% thư viện chuẩn của Python 3 (Standard Library).
+3. **Chế độ phỏng vấn chuyên sâu 7 bước (Deep Art Direction Wizard):** Khai thác chi tiết từ cá tính hình ảnh, nhiệt độ màu, triết lý bố cục, typography đến từng màn hình mục tiêu.
+4. **Tự động lưu vào folder dự án riêng biệt (`projects/<tên-dự-án>/`):** Không bao giờ ghi đè lên các dự án cũ, tự động sinh cả `DESIGN.md` và `STITCH_PROMPTS.md` đa màn hình.
+5. **Không phụ thuộc thư viện ngoài:** Chạy mượt mà với 100% thư viện chuẩn của Python 3 (Standard Library).
 
 ---
 
@@ -46,15 +47,16 @@ Dự án này cung cấp công cụ tự động tạo file **`DESIGN.md`** (Des
 git clone https://github.com/vinhvox/Stitch-design-generator.git
 cd Stitch-design-generator
 
-# Cách 1: Chế độ tương tác hỏi-đáp (Interactive Wizard)
+# Cách 1: Chế độ tương tác hỏi-đáp 7 bước (Khuyên dùng)
 python3 generator.py --interactive
+# 👉 Tự động tạo thư mục: projects/<tên-app>/DESIGN.md và STITCH_PROMPTS.md
 
 # Cách 2: Tạo nhanh bằng lệnh 1 dòng
-python3 generator.py "fintech investment crypto wallet" -p "ApexWallet" -o DESIGN.md
+python3 generator.py "fintech crypto wallet" -p "ApexWallet"
+# 👉 Lưu vào: projects/apexwallet/DESIGN.md & STITCH_PROMPTS.md
 
-# Cách 3: Tạo DESIGN.md kèm PROMPT để copy ngay vào Stitch
-python3 generator.py "fitness workout gym tracker" -p "PulseFit" \
-  --prompt-for "Màn hình bắt đầu bài tập với bộ đếm giờ và danh sách hiệp tập"
+# Cách 3: Chỉ định thư mục lưu trữ tùy ý
+python3 generator.py "fitness gym tracker" -p "PulseFit" -o my_custom_folder/
 ```
 
 ---
@@ -99,11 +101,15 @@ options:
 ### Folder Structure
 ```
 stitch-design-generator/
-├── generator.py                  # Core CLI & Design System Synthesizer
+├── generator.py                  # Core CLI & Art Direction Engine
 ├── SKILL.md                      # Agent Skill spec (Cursor, Claude Code, Antigravity)
 ├── templates/
 │   ├── DESIGN.md.template        # Base DESIGN.md markdown template
 │   └── stitch-prompt.md.template # Prompt wrapper for Stitch
+├── projects/                     # Generated projects (Dedicated folder per project)
+│   └── paperflow-pdf/            # Example project folder
+│       ├── DESIGN.md             # Project Design DNA
+│       └── STITCH_PROMPTS.md     # Multi-screen prompt suite
 ├── examples/
 │   ├── fintech-crypto-wallet/    # ApexWallet example & prompt
 │   ├── health-fitness-tracker/   # PulseFit example & prompt
