@@ -1,0 +1,59 @@
+# {{PROJECT_NAME}} — Design System Specification (DESIGN.md)
+<!-- Source of Truth for Google Stitch AI Canvas (stitch.withgoogle.com) -->
+
+## 1. Brand Identity & Visual Language
+- **Project Name**: {{PROJECT_NAME}}
+- **Industry Archetype**: {{INDUSTRY_ARCHETYPE}}
+- **Core Mood**: {{CORE_MOOD}}
+- **Target Platform**: {{PLATFORM}}
+- **Design Philosophy**: Content-first, strict 60-30-10 color balance, zero AI decoration slop.
+
+---
+
+## 2. Color System & Design Tokens (WCAG AA Compliant)
+| Token Name | Hex Value | Usage Rule |
+| :--- | :--- | :--- |
+| `--bg-canvas` | `{{BG_CANVAS}}` | 60% Base: Entire screen background |
+| `--bg-surface` | `{{BG_SURFACE}}` | Surface: Cards, dialogs, bottom sheets |
+| `--border-subtle` | `{{BORDER_SUBTLE}}` | 1px clean crisp border for cards and dividers |
+| `--text-primary` | `{{TEXT_PRIMARY}}` | Headings, primary data, active labels |
+| `--text-secondary` | `{{TEXT_SECONDARY}}` | 30% Structural: Subtitles, captions, metadata |
+| `--brand-primary` | `{{BRAND_PRIMARY}}` | 10% Accent: Primary CTA button, active tab indicator |
+| `--brand-primary-hover` | `{{BRAND_PRIMARY_HOVER}}` | Hover and pressed state for primary CTA |
+| `--status-success` | `{{STATUS_SUCCESS}}` | Positive indicators, badges, confirmations |
+| `--status-error` | `{{STATUS_ERROR}}` | Destructive actions, validation errors |
+
+---
+
+## 3. Typography Scale & Hierarchy
+- **Font Family**: `{{FONT_FAMILY}}`
+- **Scale Definition**:
+  - **Display / Hero**: `24px` | Weight: `700` (Bold) | Line Height: `32px`
+  - **Section Title**: `18px` | Weight: `600` (Semi-bold) | Line Height: `24px`
+  - **Body / Form**: `14px` | Weight: `400` (Regular) | Line Height: `20px`
+  - **Caption / Meta**: `12px` | Weight: `500` (Medium) | Line Height: `16px`
+
+---
+
+## 4. Spatial Geometry & Components
+- **Base Spatial Unit**: `8pt Grid` (`4px`, `8px`, `12px`, `16px`, `24px`, `32px`)
+- **Screen Padding**: `16px horizontal, 20px vertical`
+- **Card Geometry**:
+  - Corner Radius: `{{RADIUS_CARD}}`
+  - Border: `1px solid var(--border-subtle)`
+  - Shadow: None (flat elevation) or `0 1px 3px rgba(0,0,0,0.05)`
+- **Button Standards**:
+  - Height: `{{BUTTON_HEIGHT}}` (strictly enforced for touch accessibility)
+  - Corner Radius: `{{RADIUS_BUTTON}}`
+  - Hierarchy: Exactly ONE primary button per viewport. All secondary buttons must be outline or ghost.
+- **Iconography**:
+  - Library: `{{ICON_STYLE}}`
+  - Rule: Never mix filled and outline icon styles.
+
+---
+
+## 5. Strict Guardrails & Negative Constraints (Zero AI Slop)
+- ❌ **NO Arbitrary Gradients**: Backgrounds must be solid canvas or surface tokens.
+- ❌ **NO Heavy Blurs or Glows**: Avoid neon glows, heavy glassmorphism, or fuzzy drop shadows.
+- ❌ **NO Token Drift**: All newly generated screens MUST reuse these exact hex values, radii, and heights.
+- ❌ **AVOID**: {{AVOID_LIST}}

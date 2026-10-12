@@ -1,0 +1,21 @@
+You are a Principal Product Designer building {{PROJECT_NAME}}.
+Generate the following screen: "{{SCREEN_DESCRIPTION}}".
+
+STRICT DESIGN SYSTEM ENFORCEMENT:
+You MUST strictly follow our project's DESIGN.md specifications below:
+1. Palette (60-30-10 Rule):
+   - Canvas Background: Use the exact background token `--bg-canvas`
+   - Cards/Surfaces: Use the exact card surface token `--bg-surface` with 1px subtle border `--border-subtle`
+   - Primary CTA: Use the brand primary token `--brand-primary` (maximum 1 primary button on screen)
+2. Spacing & Shapes:
+   - Screen padding: 16px horizontal
+   - All interactive buttons must have 48px height for touch ergonomics
+   - Card radius must be consistent
+3. Style Guardrails (Zero AI-Slop):
+   - Clean, production-grade, human-crafted design (NO gratuitous gradients, NO neon glow, NO heavy drop shadows).
+   - Use Lucide-style 2px outline icons only. Never mix filled and line icons.
+
+Reference DESIGN.md tokens:
+```markdown
+{{DESIGN_MD_CONTENT}}
+```
