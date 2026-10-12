@@ -13,17 +13,17 @@
   --text-secondary: #94A3B8;
   --brand-primary: #6366F1;
   --brand-primary-hover: #4F46E5;
-  --status-success: #16A34A;
-  --status-error: #E11D48;
+  --status-success: #10B981;
+  --status-error: #F43F5E;
 
   /* Spatial & Geometry */
-  --radius-card: 20px;
+  --radius-card: 12px;
   --radius-button: 9999px;
-  --button-height: 50px;
+  --button-height: 44px;
   --spacing-screen-x: 20px;
   --spacing-screen-y: 24px;
 
   /* Typography */
-  --font-display: Plus Jakarta Sans / Geist Display;
+  --font-display: Inter Display / SF Pro Display;
   --font-body: Geist / Inter;
 }

@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 """
-Stitch Design Pro — Advanced Taste & Aesthetics Consultation Engine
-===================================================================
+Stitch Design Pro — Adaptive Art Direction Consultation Engine
+=============================================================
 Generates production-grade, aesthetically sophisticated DESIGN.md files,
 visual preview.html dashboards, code design tokens (CSS & Kotlin),
 and tailored multi-screen prompt suites for Google Stitch (stitch.withgoogle.com).
 
-Explicitly engineered to eliminate:
-- "AI Boxy Syndrome" (putting everything in rectangular bordered boxes)
-- Clunky heavy black buttons
-- Sterile, clinical, uninspired admin-like interfaces
-
-Injects human-crafted design taste:
-- Editorial warmth, fluid whitespace, borderless typography
-- Elegant color temperatures (Warm Paper, Deep Obsidian, Nordic Zen)
-- Floating pill ergonomics and subtle hairline dividers
+Features:
+- Dynamic Branching: Questions adapt contextually based on the user's domain and taste.
+- Free-form Custom Directives: User can inject specific custom requirements & guardrails.
+- Anti-Boxy Directives: Eliminates rigid rectangular cards and heavy black buttons.
+- Full Design-to-Code Bundle: DESIGN.md + STITCH_PROMPTS.md + preview.html + tokens.css + Tokens.kt.
 
 Zero third-party dependencies required (Standard Python 3 only).
 """
@@ -103,7 +99,7 @@ TASTE_PERSONAS: Dict[str, Dict[str, Any]] = {
         "status_success": "#10B981",
         "status_error": "#F43F5E",
         "font_display": "Inter Display / SF Pro Display, tight letter-spacing (-0.02em)",
-        "font_body": "Inter / Geist, high legibility",
+        "font_body": "Geist / Inter, high legibility",
         "radius_card": "12px",
         "radius_button": "8px",
         "button_height": "44px",
@@ -240,7 +236,8 @@ def generate_design_md(
     taste: Dict[str, Any],
     layout_mode: str = "borderless",
     platform: str = "mobile",
-    target_screens: Optional[List[str]] = None
+    target_screens: Optional[List[str]] = None,
+    custom_directives: Optional[str] = None
 ) -> str:
     """Generates an aesthetically rich, anti-boxy DESIGN.md for Google Stitch."""
     is_mobile = "mobile" in platform.lower()
@@ -257,6 +254,14 @@ def generate_design_md(
 The AI canvas must maintain 100% token consistency across all following screens:
 {screens_list_md}
 - Rule: Bottom navigation, card radius, button height, and color tokens must NEVER drift between these screens.
+"""
+
+    custom_section = ""
+    if custom_directives and custom_directives.strip():
+        custom_section = f"""
+## 7. Custom Directives & Special Rules (Yêu cầu đặc biệt từ tác giả)
+- ⭐ **YÊU CẦU ĐẶC BIỆT**: {custom_directives.strip()}
+- **Nguyên tắc thực thi**: Mọi màn hình được sinh ra trên Stitch BẮT BUỘC phải ưu tiên tuyệt đối yêu cầu này trên các quy chuẩn mặc định.
 """
 
     md = f"""# {project_name} — High-Aesthetic Design System Specification (DESIGN.md)
@@ -319,7 +324,7 @@ The AI canvas must maintain 100% token consistency across all following screens:
 - ❌ **CẤM Hội chứng đóng hộp (Boxy Syndrome)**: Không nhét tất cả thông tin vào các thẻ card viền xám xếp chồng.
 - ❌ **CẤM Nút khối đen nặng nề**: Tuyệt đối không dùng nút chữ nhật đen đặc choán hết màn hình.
 - ❌ **CẤM Gradient sặc sỡ & Drop Shadow đen đặc**: Giữ độ phẳng tinh tế, chiều sâu thể hiện qua khoảng cách màu và hairline.
-{screens_section}
+{screens_section}{custom_section}
 """
     return md
 
@@ -345,8 +350,15 @@ def get_screen_ux_guidance(screen_name: str) -> str:
     return "Bố cục thoáng đãng, phân cấp thị giác rõ ràng với tiêu đề lớn, khoảng trắng hào phóng và điều hướng bằng thanh pill nổi."
 
 
-def generate_stitch_prompt_suite(project_name: str, target_screens: List[str], design_md_content: str) -> str:
+def generate_stitch_prompt_suite(
+    project_name: str,
+    target_screens: List[str],
+    design_md_content: str,
+    custom_directives: Optional[str] = None
+) -> str:
     """Generates concise 1-click prompts + standalone full prompts."""
+    custom_hint = f"\n- CRITICAL AUTHOR DIRECTIVE: {custom_directives.strip()}" if custom_directives and custom_directives.strip() else ""
+
     sections = []
     for idx, screen in enumerate(target_screens):
         ux_hint = get_screen_ux_guidance(screen)
@@ -364,7 +376,7 @@ STRICT DESIGN SYSTEM INSTRUCTIONS:
 - Strictly follow all tokens and rules in the project's DESIGN.md.
 - Focus: {ux_hint}
 - Anti-Boxy Directive: DO NOT use boxed rectangle cards with 1px borders. Use generous whitespace, borderless typography flow, and hairline dividers.
-- Ergonomics: Use floating pill capsule buttons for primary interactions.
+- Ergonomics: Use floating pill capsule buttons for primary interactions.{custom_hint}
 ```
 
 #### 📦 Option B: Prompt Độc Lập (Dùng khi mở phiên chat mới trong Stitch)
@@ -375,7 +387,7 @@ Generate Screen #{idx+1}: "{screen.strip()}".
 CRITICAL DIRECTIVES:
 1. ANTI-BOXY: No rectangular card boxes inside card boxes. Use borderless fluid typography.
 2. FLOATING ERGONOMICS: Floating pill capsule buttons only. Never stretch heavy black buttons across screen.
-3. SPECIFICATION: {ux_hint}
+3. SPECIFICATION: {ux_hint}{custom_hint}
 
 DESIGN.md REFERENCE:
 {design_md_content.strip()}
@@ -475,10 +487,22 @@ object {cls_name} {{
 def generate_preview_html(
     project_name: str,
     taste: Dict[str, Any],
-    target_screens: List[str]
+    target_screens: List[str],
+    custom_directives: Optional[str] = None
 ) -> str:
     """Generates a standalone, beautiful HTML dashboard to preview design tokens and copy prompts."""
+    custom_card_html = ""
+    if custom_directives and custom_directives.strip():
+        custom_card_html = f"""
+        <div style="background: rgba(180, 83, 9, 0.08); border: 1px solid var(--brand-primary); border-radius: var(--radius-card); padding: 18px 20px; margin-bottom: 28px;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--brand-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">✨ Yêu cầu đặc biệt từ tác giả (Custom Directives)</div>
+            <p style="font-size: 14px; color: var(--text-primary);">{custom_directives.strip()}</p>
+        </div>
+        """
+
     screens_cards = []
+    custom_hint = f"\\n- CRITICAL AUTHOR DIRECTIVE: {custom_directives.strip()}" if custom_directives and custom_directives.strip() else ""
+
     for idx, screen in enumerate(target_screens):
         hint = get_screen_ux_guidance(screen)
         clean_prompt = f"""You are a Principal Product Designer building "{project_name}".
@@ -488,7 +512,7 @@ STRICT DESIGN SYSTEM INSTRUCTIONS:
 - Strictly follow all tokens and rules in the project's DESIGN.md.
 - Focus: {hint}
 - Anti-Boxy Directive: DO NOT use boxed rectangle cards with 1px borders. Use generous whitespace, borderless typography flow, and hairline dividers.
-- Ergonomics: Use floating pill capsule buttons for primary interactions."""
+- Ergonomics: Use floating pill capsule buttons for primary interactions.{custom_hint}"""
 
         escaped_prompt = clean_prompt.replace('"', '&quot;').replace('\n', '&#10;')
         screens_cards.append(f"""
@@ -682,6 +706,8 @@ STRICT DESIGN SYSTEM INSTRUCTIONS:
             <p class="subtitle">{taste['name']} — {taste['tagline']}</p>
         </header>
 
+        {custom_card_html}
+
         <h2 class="section-title">🎨 Bảng màu Design Tokens</h2>
         <div class="swatches-grid">
             <div class="swatch" onclick="copyText('{taste['bg_canvas']}', 'Canvas')">
@@ -779,159 +805,239 @@ def list_projects():
 
 
 # ==============================================================================
-# DEEP INTERACTIVE CONSULTATION WIZARD (UPGRADED)
+# ADAPTIVE DYNAMIC CONSULTATION WIZARD
 # ==============================================================================
 def interactive_mode():
-    """Runs a deep, multi-dimensional design consultation wizard with rich formatting."""
+    """Runs a deeply adaptive, branching design consultation wizard with custom directives."""
     print(f"\n{BOLD}{CYAN}╔═══════════════════════════════════════════════════════════════════════════════════════╗{RESET}")
-    print(f"{BOLD}{CYAN}║     🎨  STITCH DESIGN PRO — INTERACTIVE ART DIRECTION CONSULTATION                  ║{RESET}")
-    print(f"{BOLD}{CYAN}║     (Tạo DESIGN.md có gu, thanh thoát, xóa sạch hoàn toàn vết tích 'AI-slop')        ║{RESET}")
+    print(f"{BOLD}{CYAN}║     🎨  STITCH DESIGN PRO — ADAPTIVE ART DIRECTION CONSULTATION                      ║{RESET}")
+    print(f"{BOLD}{CYAN}║     (Khảo sát thích ứng thông minh theo lĩnh vực + Nhập yêu cầu riêng tùy ý)         ║{RESET}")
     print(f"{BOLD}{CYAN}╚═══════════════════════════════════════════════════════════════════════════════════════╝{RESET}\n")
 
-    # 1. Project Info & Category Shortcut
-    print(f"{BOLD}{YELLOW}[Bước 1/7] 📱 THÔNG TIN SẢN PHẨM & LĨNH VỰC HOẠT ĐỘNG{RESET}")
+    # 1. Project Info & Core Domain Selection
+    print(f"{BOLD}{YELLOW}[Bước 1/6] 📱 THÔNG TIN DỰ ÁN & LĨNH VỰC CỐT LÕI{RESET}")
     project_name = input(f"  ▸ {BOLD}Tên dự án (Project Name){RESET} [My App]: ").strip() or "My App"
     
-    print("\n  Chọn nhanh lĩnh vực sản phẩm của bạn:")
-    print("    [1] 📖 Đọc sách, Tài liệu & Ghi chú (PDF Reader / Books / Docs / Notes)")
-    print("    [2] 💳 Tài chính, Ví điện tử & Quản lý chi tiêu (Fintech / Crypto / Wallet)")
-    print("    [3] ⚡ Công cụ năng suất & Lập trình (Productivity / SaaS / Dev Tools)")
-    print("    [4] 🧘 Sức khỏe, Thể thao & Thiền định (Health / Fitness / Zen / Habit)")
-    print("    [5] 🛍️ Thương mại điện tử & Thời trang (E-Commerce / Retail / Store)")
-    print("    [6] ✍️ Tự nhập mô tả tự do...")
+    print("\n  Chọn lĩnh vực hoạt động của ứng dụng:")
+    print("    [1] 📖 Đọc sách, PDF, Tài liệu & Ghi chú (Reader / Books / Docs / Notes)")
+    print("    [2] ⚡ Công cụ tính toán, Năng suất & Dev Tools (Calculator / Utility / SaaS / Code)")
+    print("    [3] 💳 Tài chính cá nhân, Crypto & Ngân hàng (Fintech / Wallet / Trading)")
+    print("    [4] 🧘 Sức khỏe, Thể thao, Thiền định & Thói quen (Health / Fitness / Zen / Habit)")
+    print("    [5] 🛍️ Thương mại điện tử, Đặt lịch & Bán lẻ (E-Commerce / Store / Services)")
+    print("    [6] ✍️ Lĩnh vực khác (Tự do mô tả)...")
     
     domain_choice = input(f"  ▸ {BOLD}Chọn lĩnh vực [1-6]{RESET} (Mặc định 1): ").strip()
-    preset_taste = "editorial_warmth"
-    if domain_choice == "2":
-        query = f"Fintech Crypto Wealth Management App"
-        preset_taste = "linear_obsidian"
-    elif domain_choice == "3":
-        query = f"Productivity SaaS Tool"
-        preset_taste = "linear_obsidian"
-    elif domain_choice == "4":
-        query = f"Health Fitness Zen Tracker"
-        preset_taste = "nordic_zen"
-    elif domain_choice == "5":
-        query = f"Modern Luxury E-Commerce Fashion Store"
-        preset_taste = "modern_luxury"
-    elif domain_choice == "6":
-        query = input(f"  ▸ {BOLD}Nhập mô tả cụ thể về app của bạn:{RESET} ").strip() or "Tool Application"
-    else:
-        query = f"Document & PDF Reader Tool with smart annotations"
-        preset_taste = "editorial_warmth"
-
-    # 2. Aesthetic Taste Engine (Gu thẩm mỹ)
-    print(f"\n{BOLD}{YELLOW}[Bước 2/7] 🎭 GU THẨM MỸ & LINH HỒN HÌNH ẢNH (Aesthetic Persona){RESET}")
-    print(f"  {DIM}Định hình toàn bộ cảm xúc, ánh sáng và trải nghiệm của ứng dụng:{RESET}\n")
     
-    personas_keys = list(TASTE_PERSONAS.keys())
-    for idx, key in enumerate(personas_keys, 1):
-        item = TASTE_PERSONAS[key]
-        print(f"  {BOLD}[{idx}] {item['name']}{RESET}")
-        print(f"      {CYAN}▸ Cảm xúc:{RESET} {item['tagline']}")
-        print(f"      {DIM}▸ Đặc trưng:{RESET} {item['description']}")
-        print(f"      {GREEN}▸ Hình mẫu:{RESET} {item['analogues']}")
-        print(f"      {YELLOW}▸ Phù hợp nhất:{RESET} {item['best_for']}\n")
+    # Adaptive Domain Setup
+    domain_key = "reader"
+    domain_name = "Đọc sách & Tài liệu"
+    query = "Document PDF Reader Tool"
+    smart_screens = ["Thư viện tài liệu", "Màn hình đọc sách & ghi chú", "Cài đặt chế độ đọc"]
+    
+    if domain_choice == "2":
+        domain_key = "tool"
+        domain_name = "Công cụ tính toán & Dev Tools"
+        query = "Productivity Calculator Utility Tool"
+        smart_screens = ["Màn tính toán thường", "Tính toán khoa học", "Đổi đơn vị & Lịch sử"]
+    elif domain_choice == "3":
+        domain_key = "finance"
+        domain_name = "Tài chính & Ví điện tử"
+        query = "Fintech Wealth Crypto Wallet App"
+        smart_screens = ["Tổng quan tài sản & số dư", "Lịch sử giao dịch", "Quản lý ngân sách"]
+    elif domain_choice == "4":
+        domain_key = "lifestyle"
+        domain_name = "Sức khỏe & Thiền định"
+        query = "Health Fitness Meditation Tracker"
+        smart_screens = ["Bảng thói quen hàng ngày", "Buổi tập luyện / thiền", "Thống kê tiến độ"]
+    elif domain_choice == "5":
+        domain_key = "commerce"
+        domain_name = "Thương mại & Bán lẻ"
+        query = "Modern Retail E-Commerce Store"
+        smart_screens = ["Khám phá sản phẩm", "Chi tiết sản phẩm & chọn size", "Giỏ hàng & thanh toán"]
+    elif domain_choice == "6":
+        domain_key = "custom"
+        domain_name = input(f"  ▸ {BOLD}Nhập tên lĩnh vực:{RESET} ").strip() or "Custom Digital Product"
+        query = input(f"  ▸ {BOLD}Mô tả ngắn gọn về app của bạn:{RESET} ").strip() or "Modern Utility Application"
+        smart_screens = ["Màn hình chính / Khám phá", "Màn hình chi tiết nghiệp vụ", "Màn hình cài đặt"]
 
-    default_idx = personas_keys.index(preset_taste) + 1 if preset_taste in personas_keys else 1
-    choice_taste = input(f"  ▸ {BOLD}Chọn phong cách [1-{len(personas_keys)}]{RESET} (Mặc định [{default_idx}]): ").strip()
-    try:
-        taste_idx = int(choice_taste) - 1
-        if 0 <= taste_idx < len(personas_keys):
-            selected_taste_key = personas_keys[taste_idx]
+    # 2. ADAPTIVE PERSONA SELECTION (Filtered & Contextual to Domain)
+    print(f"\n{BOLD}{YELLOW}[Bước 2/6] 🎭 GU THẨM MỸ TƯƠNG THÍCH VỚI '{domain_name.upper()}'{RESET}")
+    print(f"  {DIM}Các phong cách dưới đây đã được lọc chuẩn xác để ăn khớp với nghiệp vụ của bạn:{RESET}\n")
+
+    if domain_key == "tool":
+        print(f"  {BOLD}[1] Linear Obsidian (Sleek Dark Pro) - [KHUYÊN DÙNG CHO CÔNG CỤ]{RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Đen sâu huyền bí (OLED), viền kim loại 0.5px, phong cách công cụ đỉnh cao.")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Linear, Raycast, Superhuman, Arc Browser\n")
+        print(f"  {BOLD}[2] Modern Consumer Fluid (Airbnb / Notion Style){RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Mềm mại, thân thiện, nút bấm bo tròn dễ chạm, không bao giờ thô ráp.")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Notion, Airbnb, Spotify\n")
+        print(f"  {BOLD}[3] Nordic Zen (Pure Minimalist Keypad){RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Tối giản thanh khiết, không rườm rà, tập trung 100% vào thao tác.")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Muji, Nothing OS, Teenage Engineering\n")
+        print(f"  {BOLD}[4] Xem tất cả các phong cách khác...{RESET}")
+        
+        p_choice = input(f"  ▸ {BOLD}Chọn gu thẩm mỹ [1-4]{RESET} (Mặc định [1]): ").strip()
+        if p_choice == "2":
+            selected_taste_key = "modern_consumer"
+        elif p_choice == "3":
+            selected_taste_key = "nordic_zen"
+        elif p_choice == "4":
+            selected_taste_key = "editorial_warmth"
         else:
-            selected_taste_key = preset_taste
-    except ValueError:
-        selected_taste_key = preset_taste
+            selected_taste_key = "linear_obsidian"
+
+    elif domain_key == "reader":
+        print(f"  {BOLD}[1] Editorial Warmth (Paper & Craft) - [KHUYÊN DÙNG CHO SÁCH/TÀI LIỆU]{RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Nền giấy kem ngà tự nhiên, chữ than chì nhung, ấm áp, chống mỏi mắt.")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Apple Books, Craft Docs, Readwise Reader, Kinfolk\n")
+        print(f"  {BOLD}[2] Nordic Zen (Clean Minimal Reading){RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Thanh khiết, tĩnh lặng, cực nhiều khoảng thở (whitespace).")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Muji, Nothing OS\n")
+        print(f"  {BOLD}[3] Modern Luxury (Editorial Serif){RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Đẳng cấp, font có chân kiêu sa như ấn phẩm thượng lưu.")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Vogue, The New York Times\n")
+        
+        p_choice = input(f"  ▸ {BOLD}Chọn gu thẩm mỹ [1-3]{RESET} (Mặc định [1]): ").strip()
+        if p_choice == "2":
+            selected_taste_key = "nordic_zen"
+        elif p_choice == "3":
+            selected_taste_key = "modern_luxury"
+        else:
+            selected_taste_key = "editorial_warmth"
+
+    elif domain_key == "finance":
+        print(f"  {BOLD}[1] Linear Obsidian (Dark Crypto Pro) - [KHUYÊN DÙNG TRADING/FINTECH]{RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Đen sâu huyền bí, viền kim loại siêu mảnh, hiện đại, uy quyền.")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Linear, Raycast, Vercel\n")
+        print(f"  {BOLD}[2] Modern Luxury Wealth{RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Đẳng cấp ngân hàng tư nhân, xanh lục bảo, sang trọng.")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Bloomberg Markets, Rolex app\n")
+        print(f"  {BOLD}[3] Modern Consumer Fluid{RESET}")
+        print(f"      {CYAN}▸ Cảm xúc:{RESET} Trực quan, thân thiện, dễ quản lý chi tiêu như ví điện tử thế hệ mới.")
+        print(f"      {GREEN}▸ Hình mẫu:{RESET} Revolut, Notion, Airbnb\n")
+
+        p_choice = input(f"  ▸ {BOLD}Chọn gu thẩm mỹ [1-3]{RESET} (Mặc định [1]): ").strip()
+        if p_choice == "2":
+            selected_taste_key = "modern_luxury"
+        elif p_choice == "3":
+            selected_taste_key = "modern_consumer"
+        else:
+            selected_taste_key = "linear_obsidian"
+
+    else:
+        # Generic / Lifestyle / Commerce
+        print(f"  {BOLD}[1] Nordic Zen (Pure Minimalism){RESET} — Thanh khiết, tĩnh lặng, ngập tràn khoảng thở.")
+        print(f"  {BOLD}[2] Modern Consumer Fluid{RESET} — Mềm mại, trẻ trung, thân thiện như Airbnb/Notion.")
+        print(f"  {BOLD}[3] Modern Luxury & Editorial{RESET} — Sang trọng, đẳng cấp thương gia.")
+        print(f"  {BOLD}[4] Editorial Warmth{RESET} — Ấm áp, thủ công, nền giấy kem ngà.")
+        p_choice = input(f"  ▸ {BOLD}Chọn gu thẩm mỹ [1-4]{RESET} (Mặc định [1]): ").strip()
+        if p_choice == "2":
+            selected_taste_key = "modern_consumer"
+        elif p_choice == "3":
+            selected_taste_key = "modern_luxury"
+        elif p_choice == "4":
+            selected_taste_key = "editorial_warmth"
+        else:
+            selected_taste_key = "nordic_zen"
 
     selected_persona = TASTE_PERSONAS[selected_taste_key]
     print(f"  👉 {GREEN}Đã chọn linh hồn:{RESET} {BOLD}{selected_persona['name']}{RESET}")
 
-    # 3. Layout Philosophy (Bố cục chống đóng hộp)
-    print(f"\n{BOLD}{YELLOW}[Bước 3/7] 📐 TRIẾT LÝ BỐ CỤC (Chống triệt để 'Bệnh đóng hộp' AI){RESET}")
-    print("  [1] 🌊 Borderless & Fluid (Khuyên dùng mạnh mẽ):")
-    print("      └─ Xóa sạch các thẻ card viền xám. Nội dung nằm trên nền canvas, phân tách bằng")
-    print("         khoảng trắng (16-24px) và hairline 0.5px. Xóa sổ cảm giác bảng tính/Excel thô cứng!")
-    print("  [2] 📱 Soft Grouped Inset (Chuẩn mực Apple iOS Human Interface):")
-    print("      └─ Các khối thông tin bo góc lớn mềm mại (18px-24px), thụt lề 16px, phong cách iOS Settings.")
-    print("  [3] 🎈 Floating Canvas (Khung mở & Dock nổi):")
-    print("      └─ Nền phẳng hoàn toàn, thanh công cụ điều khiển co lại thành Floating Capsule lơ lửng phía dưới.")
+    # 3. ADAPTIVE DOMAIN-SPECIFIC INTERACTION DILEMMA
+    print(f"\n{BOLD}{YELLOW}[Bước 3/6] 📐 TRẢI NGHIỆM TƯƠNG TÁC ĐẶC THÙ CHO '{domain_name.upper()}'{RESET}")
     
-    choice_layout = input(f"  ▸ {BOLD}Chọn triết lý bố cục [1-3]{RESET} (Mặc định [1]): ").strip()
-    layout_mode = "borderless" if choice_layout != "2" and choice_layout != "3" else ("grouped" if choice_layout == "2" else "floating")
+    layout_mode = "borderless"
+    btn_mode = "pill"
+    typography_mode = "tech_sans" if domain_key in ["tool", "finance"] else "editorial_serif"
 
-    # 4. Color Atmosphere (Bầu không khí màu sắc)
-    print(f"\n{BOLD}{YELLOW}[Bước 4/7] 🖌️ NHIỆT ĐỘ MÀU SẮC & BẦU KHÔNG KHÍ (Color Atmosphere){RESET}")
-    print(f"  [1] 💎 Giữ nguyên Palette chuẩn của {selected_persona['name']}")
+    if domain_key == "tool":
+        print("  Hỏi về trải nghiệm bàn phím & hiển thị dữ liệu (Chống thô cứng):")
+        print("    [1] 💊 Phím số bo tròn Capsule/Pill (Chạm cực êm, hiển thị số lớn, không thô) [Khuyên dùng]")
+        print("    [2] 🌊 Bàn phím số phẳng tối giản không viền (Borderless Flat Keypad)")
+        print("    [3] ⚡ Bố cục kỹ thuật số chuyên nghiệp (Pro Compact Grid)")
+        t_choice = input(f"  ▸ {BOLD}Chọn kiểu trải nghiệm [1-3]{RESET} (Mặc định [1]): ").strip()
+        if t_choice == "2":
+            layout_mode = "borderless"
+            btn_mode = "minimal"
+        elif t_choice == "3":
+            layout_mode = "grouped"
+            btn_mode = "soft"
+        else:
+            layout_mode = "grouped"
+            btn_mode = "pill"
+        typography_mode = "tech_sans"
+
+    elif domain_key == "reader":
+        print("  Hỏi về trải nghiệm đọc sách & chú thích:")
+        print("    [1] 🌊 Trang sách không viền (Borderless), thanh công cụ chú thích nổi Floating Pill [Khuyên dùng]")
+        print("    [2] 📱 Bố cục Grouped Inset Sheet, thẻ phân trang rõ ràng")
+        r_choice = input(f"  ▸ {BOLD}Chọn kiểu trải nghiệm [1-2]{RESET} (Mặc định [1]): ").strip()
+        layout_mode = "borderless" if r_choice != "2" else "grouped"
+        btn_mode = "pill"
+        typography_mode = "editorial_serif"
+
+    elif domain_key == "finance":
+        print("  Hỏi về hiển thị số dư & giao dịch:")
+        print("    [1] 🌊 Dòng tiền phẳng không viền (Borderless Stream), số tiền lớn phân cấp sắc nét [Khuyên dùng]")
+        print("    [2] 📱 Thẻ tài sản Grouped Inset Cards theo từng tài khoản/ví")
+        f_choice = input(f"  ▸ {BOLD}Chọn kiểu trải nghiệm [1-2]{RESET} (Mặc định [1]): ").strip()
+        layout_mode = "borderless" if f_choice != "2" else "grouped"
+        btn_mode = "pill"
+        typography_mode = "tech_sans"
+
+    else:
+        print("  Hỏi về triết lý bố cục chống 'Bệnh đóng hộp':")
+        print("    [1] 🌊 Borderless & Fluid (Khoảng trắng tự nhiên & hairline 0.5px) [Khuyên dùng]")
+        print("    [2] 📱 Soft Grouped Inset (Khối bo góc mềm 18-24px kiểu iOS)")
+        g_choice = input(f"  ▸ {BOLD}Chọn bố cục [1-2]{RESET} (Mặc định [1]): ").strip()
+        layout_mode = "borderless" if g_choice != "2" else "grouped"
+        btn_mode = "pill"
+        typography_mode = "modern_sans"
+
+    # 4. ADAPTIVE COLOR ATMOSPHERE & CONTRAST HARMONY
+    print(f"\n{BOLD}{YELLOW}[Bước 4/6] 🖌️ NHIỆT ĐỘ MÀU SẮC & BẦU KHÔNG KHÍ{RESET}")
+    print(f"  [1] 💎 Giữ nguyên Palette tối ưu của {selected_persona['name']}")
     print(f"      └─ Canvas: {selected_persona['bg_canvas']} | Chữ: {selected_persona['text_primary']} | Accent: {selected_persona['brand_primary']}")
-    print("  [2] ☕ Tông Giấy ngà ấm áp (Warm Cream #FAF8F5 & Hổ phách #B45309):")
-    print("      └─ Chống mỏi mắt tuyệt đối khi đọc lâu, cảm giác thủ công tự nhiên như sách giấy.")
-    print("  [3] 🌑 Tông Obsidian Tối (Deep Dark #090A0F & Tím điện #6366F1):")
-    print("      └─ Đen tuyền sâu thẳm, huyền bí, viền kim loại mảnh 0.5px, siêu tiết kiệm pin OLED.")
-    print("  [4] ❄️ Tông Trắng khoáng sản (Pure White #FFFFFF & Xám tro #E5E5E7):")
-    print("      └─ Tinh khôi, thanh sạch, phong cách tối giản Bắc Âu / Muji.")
-    print("  [5] 🎨 Tự nhập mã màu Accent nhận diện thương hiệu riêng (Custom Hex Code)...")
+    
+    if selected_persona['bg_canvas'].startswith("#0") or selected_persona['bg_canvas'].startswith("#1"):
+        # Dark theme is active -> Offer light contrast alternative
+        print("  [2] ☕ Đổi sang Tông Sáng giấy ngà (Warm Cream #FAF8F5 / Hổ phách #B45309)")
+        print("  [3] 🎨 Tự nhập mã Hex màu Accent riêng...")
+    else:
+        # Light theme is active -> Offer dark contrast alternative
+        print("  [2] 🌑 Đổi sang Tông Tối Obsidian (Deep Dark #090A0F / Tím điện #6366F1)")
+        print("  [3] 🎨 Tự nhập mã Hex màu Accent riêng...")
 
-    choice_color = input(f"  ▸ {BOLD}Chọn bầu không khí màu [1-5]{RESET} (Mặc định [1]): ").strip()
+    color_choice = input(f"  ▸ {BOLD}Chọn bầu không khí màu [1-3]{RESET} (Mặc định [1]): ").strip()
     color_override = {}
-    if choice_color == "2":
-        color_override = {
-            "bg_canvas": "#FAF8F5",
-            "bg_surface": "#FFFFFF",
-            "border_subtle": "#EFECE6",
-            "text_primary": "#1C1917",
-            "text_secondary": "#78716C",
-            "brand_primary": "#B45309",
-            "brand_primary_hover": "#92400E"
-        }
-    elif choice_color == "3":
-        color_override = {
-            "bg_canvas": "#090A0F",
-            "bg_surface": "#12141A",
-            "border_subtle": "#1F232D",   # Corrected dark metallic border
-            "text_primary": "#F1F5F9",
-            "text_secondary": "#94A3B8",  # Corrected dark muted text
-            "brand_primary": "#6366F1",
-            "brand_primary_hover": "#4F46E5"
-        }
-    elif choice_color == "4":
-        color_override = {
-            "bg_canvas": "#FFFFFF",
-            "bg_surface": "#F6F6F7",
-            "border_subtle": "#E5E5E7",
-            "text_primary": "#111111",
-            "text_secondary": "#6E6E73",
-            "brand_primary": "#2D3139",
-            "brand_primary_hover": "#1A1C20"
-        }
-    elif choice_color == "5":
+    
+    if color_choice == "2":
+        if selected_persona['bg_canvas'].startswith("#0") or selected_persona['bg_canvas'].startswith("#1"):
+            # Switch to warm light
+            color_override = {
+                "bg_canvas": "#FAF8F5",
+                "bg_surface": "#FFFFFF",
+                "border_subtle": "#EFECE6",
+                "text_primary": "#1C1917",
+                "text_secondary": "#78716C",
+                "brand_primary": "#B45309",
+                "brand_primary_hover": "#92400E"
+            }
+        else:
+            # Switch to dark obsidian
+            color_override = {
+                "bg_canvas": "#090A0F",
+                "bg_surface": "#12141A",
+                "border_subtle": "#1F232D",   # Fixed dark metallic border!
+                "text_primary": "#F1F5F9",
+                "text_secondary": "#94A3B8",  # Fixed dark muted text!
+                "brand_primary": "#6366F1",
+                "brand_primary_hover": "#4F46E5"
+            }
+    elif color_choice == "3":
         custom_accent = input(f"    ▸ {BOLD}Nhập mã Hex màu Accent bạn muốn (ví dụ #059669, #EA580C):{RESET} ").strip()
         if custom_accent.startswith("#") and len(custom_accent) in [4, 7]:
             color_override = {"brand_primary": custom_accent, "brand_primary_hover": custom_accent}
-
-    # 5. Typography Pairing
-    print(f"\n{BOLD}{YELLOW}[Bước 5/7] 🔤 PHONG CÁCH TYPOGRAPHY & CHỮ VIẾT{RESET}")
-    print("  [1] 📚 Editorial Serif + Sans (Tiêu đề: Newsreader / Playfair; Nội dung: Inter):")
-    print("      └─ Sang trọng, có chiều sâu nghệ thuật, xuất sắc cho app đọc sách, tạp chí, ghi chú.")
-    print("  [2] 🔠 Clean Modern Sans (Toàn bộ dùng Inter / SF Pro):")
-    print("      └─ Trung tính, thanh sạch, độ dễ đọc (legibility) cao nhất trên mọi màn hình.")
-    print("  [3] ⚡ Geometric Tech Sans (Plus Jakarta Sans / Geist):")
-    print("      └─ Hiện đại, trẻ trung, sắc sảo cho công cụ SaaS & Dev Tools.")
-    
-    choice_typo = input(f"  ▸ {BOLD}Chọn Typography [1-3]{RESET} (Mặc định [1]): ").strip()
-    typography_mode = "editorial_serif" if choice_typo != "2" and choice_typo != "3" else ("modern_sans" if choice_typo == "2" else "tech_sans")
-
-    # 6. Button & Micro-Interactions (Phong cách nút bấm)
-    print(f"\n{BOLD}{YELLOW}[Bước 6/7] 🔘 PHONG CÁCH NÚT BẤM (CTA) & VI TƯƠNG TÁC{RESET}")
-    print("  [1] 💊 Floating Pill / Capsule (Nút viên nhộng bo tròn 9999px mềm mại, không bao giờ thô ráp):")
-    print("      └─ Khuyên dùng để xóa bỏ vệt thô cứng của AI. Đặt nổi thanh thoát, không che khuất nội dung.")
-    print("  [2] 🏷️  Soft Rounded (Bo góc mềm 12px vừa phải, kích thước gọn gàng):")
-    print("      └─ Phong cách hiện đại, đĩnh đạc, phù hợp với dashboard hoặc ứng dụng công việc.")
-    print("  [3] ✍️  Minimal Text Action (Tối giản hoàn toàn, ưu tiên text link & icon):")
-    print("      └─ Tinh khiết tuyệt đối, không dùng khối màu nặng nề.")
-    
-    choice_btn = input(f"  ▸ {BOLD}Chọn phong cách nút [1-3]{RESET} (Mặc định [1]): ").strip()
-    btn_mode = "pill" if choice_btn != "2" and choice_btn != "3" else ("soft" if choice_btn == "2" else "minimal")
 
     # Build the harmonized taste profile
     taste = build_taste_profile(
@@ -941,31 +1047,37 @@ def interactive_mode():
         typography_mode=typography_mode
     )
 
-    # 7. Target Screens & Output Directory
+    # 5. ADAPTIVE TARGET SCREENS & DEDICATED PROJECT FOLDER
     project_slug = slugify(project_name)
     default_project_dir = os.path.join("projects", project_slug)
 
-    print(f"\n{BOLD}{YELLOW}[Bước 7/7] 🎯 DANH SÁCH MÀN HÌNH MỤC TIÊU & XUẤT BẢN{RESET}")
+    print(f"\n{BOLD}{YELLOW}[Bước 5/6] 🎯 DANH SÁCH MÀN HÌNH MỤC TIÊU & THƯ MỤC LƯU{RESET}")
     platform = input(f"  ▸ {BOLD}Nền tảng mục tiêu (mobile / web){RESET} [mobile]: ").strip() or "mobile"
-    
-    dir_input = input(f"  ▸ {BOLD}Thư mục lưu dự án riêng biệt{RESET} [{default_project_dir}]: ").strip()
+    dir_input = input(f"  ▸ {BOLD}Thư mục lưu dự án (tránh ghi đè){RESET} [{default_project_dir}]: ").strip()
     project_dir = dir_input or default_project_dir
+
+    smart_default_str = ", ".join(smart_screens)
+    print(f"\n  💡 Gợi ý màn hình chuẩn cho {BOLD}{domain_name}{RESET}:")
+    print(f"     {CYAN}{smart_default_str}{RESET}")
+    screens_input = input(f"  ▸ {BOLD}Nhập danh sách màn hình (Enter để nhận gợi ý trên):{RESET} ").strip()
     
-    print("\n  💡 Nhập các màn hình bạn muốn sinh trên Stitch (cách nhau bởi dấu phẩy):")
-    print("     Ví dụ: Thư viện tài liệu, Màn hình đọc sách & ghi chú, Cài đặt chế độ đọc")
-    screens_input = input(f"  ▸ {BOLD}Danh sách màn hình:{RESET} ").strip()
-    
-    target_screens = []
     if screens_input:
         target_screens = [s.strip() for s in screens_input.split(",") if s.strip()]
     else:
-        target_screens = ["Màn hình chính / Khám phá", "Màn hình chi tiết nghiệp vụ", "Màn hình cài đặt"]
+        target_screens = smart_screens
+
+    # 6. FREE-FORM CUSTOM DIRECTIVES & SPECIAL WISHES (Crucial feature!)
+    print(f"\n{BOLD}{YELLOW}[Bước 6/6] ✍️ YÊU CẦU ĐẶC BIỆT & RÀNG BUỘC RIÊNG (Custom Directives){RESET}")
+    print(f"  {DIM}Bạn có mong muốn hoặc yêu cầu riêng nào để giao diện hoàn toàn theo ý bạn không?{RESET}")
+    print(f"  {DIM}Ví dụ: 'Nút AC và nút = có màu cam nổi bật', 'Font số hiển thị dạng Monospace', 'Cấm icon màu mè'...{RESET}")
+    custom_directives = input(f"  ▸ {BOLD}Nhập yêu cầu riêng (Nhấn Enter nếu không có):{RESET} ").strip()
 
     # SUMMARY CARD BEFORE GENERATING
     print(f"\n{BOLD}{GREEN}═══════════════════════════════════════════════════════════════════════════════════════{RESET}")
     print(f" {BOLD}TỔNG KẾT BẢN THIẾT KẾ NGHỆ THUẬT (DESIGN DNA SUMMARY){RESET}")
     print(f"{BOLD}{GREEN}═══════════════════════════════════════════════════════════════════════════════════════{RESET}")
     print(f"  • Dự án:            {BOLD}{project_name}{RESET} ({platform.upper()})")
+    print(f"  • Lĩnh vực:         {domain_name}")
     print(f"  • Thư mục riêng:    {CYAN}{project_dir}/{RESET}")
     print(f"  • Linh hồn thẩm mỹ: {CYAN}{taste['name']}{RESET}")
     print(f"  • Bố cục:           {GREEN}{layout_mode.upper()} (Chống đóng hộp){RESET}")
@@ -973,9 +1085,11 @@ def interactive_mode():
     print(f"  • Typography:       {typography_mode.upper()}")
     print(f"  • Phong cách nút:   {btn_mode.upper()} Action")
     print(f"  • Số màn hình:      {len(target_screens)} màn hình ({', '.join(target_screens)})")
+    if custom_directives:
+        print(f"  • Yêu cầu riêng:    {YELLOW}{custom_directives}{RESET}")
     print(f"{BOLD}{GREEN}═══════════════════════════════════════════════════════════════════════════════════════{RESET}\n")
 
-    confirm = input(f"👉 {BOLD}Xác nhận tạo toàn bộ Design System, Code Tokens & Preview? [Y/n]:{RESET} ").strip().lower()
+    confirm = input(f"👉 {BOLD}Xác nhận tạo trọn bộ sản phẩm chất lượng cao? [Y/n]:{RESET} ").strip().lower()
     if confirm == "n":
         print("❌ Đã hủy thao tác.")
         return
@@ -996,20 +1110,21 @@ def interactive_mode():
         taste=taste,
         layout_mode=layout_mode,
         platform=platform,
-        target_screens=target_screens
+        target_screens=target_screens,
+        custom_directives=custom_directives
     )
     with open(design_md_file, "w", encoding="utf-8") as f:
         f.write(content)
     print(f"  ✅ {GREEN}1. Design System Specification:{RESET} '{design_md_file}'")
 
     # 2. Generate STITCH_PROMPTS.md
-    prompt_suite_content = generate_stitch_prompt_suite(project_name, target_screens, content)
+    prompt_suite_content = generate_stitch_prompt_suite(project_name, target_screens, content, custom_directives)
     with open(prompt_suite_file, "w", encoding="utf-8") as f:
         f.write(prompt_suite_content)
     print(f"  ✅ {GREEN}2. Bộ Prompt đa màn hình (Gọn + Độc lập):{RESET} '{prompt_suite_file}'")
 
     # 3. Generate preview.html
-    preview_html_content = generate_preview_html(project_name, taste, target_screens)
+    preview_html_content = generate_preview_html(project_name, taste, target_screens, custom_directives)
     with open(preview_html_file, "w", encoding="utf-8") as f:
         f.write(preview_html_content)
     print(f"  ✅ {GREEN}3. Dashboard xem trước trực quan (Web):{RESET} '{preview_html_file}'")
@@ -1044,6 +1159,7 @@ def main():
     parser.add_argument("--taste", default="editorial_warmth", choices=list(TASTE_PERSONAS.keys()), help="Aesthetic taste engine")
     parser.add_argument("-o", "--output-dir", default="", help="Custom output directory (default: projects/<project-slug>)")
     parser.add_argument("--prompt-for", help="Also generate an enhanced Stitch prompt for a specific screen")
+    parser.add_argument("--custom", default="", help="Custom directives / special wishes")
     parser.add_argument("--list", action="store_true", help="List all generated projects")
     parser.add_argument("--interactive", action="store_true", help="Run interactive consultation wizard")
 
@@ -1075,15 +1191,16 @@ def main():
         query=args.query,
         taste=taste,
         platform=args.platform,
-        target_screens=target_screens
+        target_screens=target_screens,
+        custom_directives=args.custom
     )
 
     with open(design_md_file, "w", encoding="utf-8") as f:
         f.write(content)
     with open(prompt_suite_file, "w", encoding="utf-8") as f:
-        f.write(generate_stitch_prompt_suite(args.project, target_screens, content))
+        f.write(generate_stitch_prompt_suite(args.project, target_screens, content, args.custom))
     with open(preview_html_file, "w", encoding="utf-8") as f:
-        f.write(generate_preview_html(args.project, taste, target_screens))
+        f.write(generate_preview_html(args.project, taste, target_screens, args.custom))
     with open(tokens_css_file, "w", encoding="utf-8") as f:
         f.write(generate_tokens_css(args.project, taste))
     with open(tokens_kt_file, "w", encoding="utf-8") as f:

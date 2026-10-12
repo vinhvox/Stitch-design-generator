@@ -34,11 +34,12 @@ Dự án này cung cấp công cụ tự động tạo file **`DESIGN.md`** (Des
    * ❌ CẤM nhồi nhét mọi thứ vào các ô chữ nhật viền xám xếp chồng kiểu bảng tính Excel.
    * ❌ CẤM các nút bấm đen sì chiếm 100% chiều ngang màn hình.
    * ✅ BẮT BUỘC dùng **Borderless List Items** (không viền, khoảng trắng tự nhiên, hairline divider 0.5px) và **Floating Action Pills**.
-3. **Chế độ phỏng vấn chuyên sâu 7 bước (Deep Art Direction Wizard):** Khai thác chi tiết từ cá tính hình ảnh, nhiệt độ màu, triết lý bố cục, typography đến từng màn hình mục tiêu.
-4. **Tự động lưu vào folder dự án riêng biệt (`projects/<tên-dự-án>/`):** Không bao giờ ghi đè lên các dự án cũ.
-5. **Dashboard xem trước trực quan (`preview.html`):** Double-click mở file HTML trong trình duyệt để thử màu sắc, xem component thực tế và sao chép prompt từng màn hình bằng 1 cú click chuột!
-6. **Cầu nối Design-to-Code:** Tự động xuất kèm mã nguồn `tokens.css` (cho Web / Tailwind) và `ThemeTokens.kt` (cho Android Jetpack Compose).
-7. **Không phụ thuộc thư viện ngoài:** Chạy mượt mà với 100% thư viện chuẩn của Python 3 (Standard Library).
+3. **Khảo sát thích ứng theo lĩnh vực (Adaptive Dynamic Branching):** Các câu hỏi tự động thay đổi thông minh theo từng ngành (ví dụ: Tool tính toán sẽ hỏi về trải nghiệm bàn phím, app đọc sách sẽ hỏi về chất giấy và thanh chú thích).
+4. **Nhập yêu cầu đặc biệt tùy ý (Free-form Custom Directives):** Cho phép bạn tự do viết bất kỳ mong muốn nào ở bước cuối cùng (ví dụ: *"Nút AC có màu cam", "Font số Monospace", "Thanh trượt góc trên"*), hệ thống sẽ nhúng thẳng vào `DESIGN.md` và các prompt cho Stitch!
+5. **Tự động lưu vào folder dự án riêng biệt (`projects/<tên-dự-án>/`):** Không bao giờ ghi đè lên các dự án cũ.
+6. **Dashboard xem trước trực quan (`preview.html`):** Double-click mở file HTML trong trình duyệt để thử màu sắc, xem component thực tế và sao chép prompt từng màn hình bằng 1 cú click chuột!
+7. **Cầu nối Design-to-Code:** Tự động xuất kèm mã nguồn `tokens.css` (cho Web / Tailwind) và `ThemeTokens.kt` (cho Android Jetpack Compose).
+8. **Không phụ thuộc thư viện ngoài:** Chạy mượt mà với 100% thư viện chuẩn của Python 3 (Standard Library).
 
 ---
 

@@ -16,8 +16,8 @@ object CalculatorTokens {
     val TextSecondary = Color(0xFF94A3B8)
     val BrandPrimary = Color(0xFF6366F1)
     val BrandPrimaryHover = Color(0xFF4F46E5)
-    val StatusSuccess = Color(0xFF16A34A)
-    val StatusError = Color(0xFFE11D48)
+    val StatusSuccess = Color(0xFF10B981)
+    val StatusError = Color(0xFFF43F5E)
 
     // Geometry & Touch Ergonomics
     val ButtonHeight = 48.dp
