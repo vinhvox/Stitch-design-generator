@@ -22,11 +22,19 @@ Khi tạo giao diện trên **Google Stitch** ([stitch.withgoogle.com](https://s
 * **"AI Slop" (Giao diện phèn):** AI tự động nhồi nhét gradient lòe loẹt, drop-shadow quá đà, viền phát sáng và icon lộn xộn.
 * **Không có Design Tokens:** Thiếu hệ thống phân cấp màu (60-30-10), lưới không gian (8pt grid) và tỷ lệ font chữ.
 
-### 2. Giải pháp: `Stitch Design Pro`
-Dự án này cung cấp công cụ tự động tạo file **`DESIGN.md`** (Design DNA) chuẩn xác cho Google Stitch, kết hợp với các nguyên tắc từ **UI/UX Pro Max**:
-1. **Khóa chặt Design Tokens:** Tự tính toán bảng màu chuẩn 60-30-10, WCAG AA tương phản cao.
-2. **Loại bỏ AI Slop (Negative Constraints):** Tự động cấm gradient ngẫu nhiên, cấm trộn icon, cố định chiều cao nút 48px.
-3. **Enhanced Prompt Generator:** Tự động gói yêu cầu màn hình vào prompt chuẩn để copy thẳng vào Stitch.
+### 2. Giải pháp: `Stitch Design Pro` (Phiên bản Taste & Aesthetics Engine)
+Dự án này cung cấp công cụ tự động tạo file **`DESIGN.md`** (Design DNA) chuẩn xác cho Google Stitch, giải quyết triệt để vấn đề "thô cứng" và "mùi AI":
+1. **5 Động cơ Gu thẩm mỹ (Taste Engines):**
+   * 📖 **Editorial Warmth (Paper & Craft):** Phong cách ấm áp, nền giấy ngà, tạp chí cao cấp như Apple Books, Craft Docs, Readwise.
+   * 🖤 **Linear Obsidian (Sleek Dark):** Đen sâu huyền bí, tinh xảo, tối giản công nghệ như Linear, Raycast, Superhuman.
+   * 🌿 **Nordic Zen (Pure Minimalism):** Tối giản thanh khiết, ngập tràn khoảng thở như Muji, Nothing OS.
+   * 💎 **Modern Luxury & Editorial:** Sang trọng, font có chân quý phái, đẳng cấp thương gia.
+   * ⚡ **Modern Consumer Fluid:** Trẻ trung, mềm mại, trực quan như Airbnb, Notion.
+2. **Xóa sổ "Bệnh đóng hộp" (Anti-Boxy Directives):**
+   * ❌ CẤM nhồi nhét mọi thứ vào các ô chữ nhật viền xám xếp chồng kiểu bảng tính Excel.
+   * ❌ CẤM các nút bấm đen sì chiếm 100% chiều ngang màn hình.
+   * ✅ BẮT BUỘC dùng **Borderless List Items** (không viền, khoảng trắng tự nhiên, hairline divider 0.5px) và **Floating Action Pills**.
+3. **Chế độ phỏng vấn chuyên sâu 6 bước (Deep Interactive Wizard):** Khai thác chi tiết từ cá tính hình ảnh, nhiệt độ màu, triết lý bố cục đến kiểu dáng nút bấm.
 4. **Không phụ thuộc thư viện ngoài:** Chạy mượt mà với 100% thư viện chuẩn của Python 3 (Standard Library).
 
 ---
