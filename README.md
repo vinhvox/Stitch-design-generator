@@ -35,8 +35,8 @@ Dự án này cung cấp công cụ tự động tạo file **`DESIGN.md`** (Des
 
 ```bash
 # Clone repository
-git clone https://github.com/<your-username>/stitch-design-generator.git
-cd stitch-design-generator
+git clone https://github.com/vinhvox/Stitch-design-generator.git
+cd Stitch-design-generator
 
 # Cách 1: Chế độ tương tác hỏi-đáp (Interactive Wizard)
 python3 generator.py --interactive
@@ -111,7 +111,7 @@ stitch-design-generator/
 If you use **Claude Code**, **Cursor**, **Antigravity IDE**, or **Gemini CLI**, you can install this skill directly:
 
 ```bash
-npx skills add <your-username>/stitch-design-generator --skill stitch-design-pro
+npx skills add vinhvox/Stitch-design-generator --skill stitch-design-pro
 ```
 
 ---
